@@ -27,7 +27,7 @@ namespace SegurosApp.LN
 
             if (edadCliente < datosplanSeleccionado!.EdadMin || edadCliente > datosplanSeleccionado!.EdadMax)
             {
-                return new ResponseDto<object>(false, "El cliente no se encuntra en el rango de edad valido para adquirir este producto", null);
+                return new ResponseDto<object>(false, "El cliente no se encuentra en el rango de edad válido para adquirir este producto", null);
             }
 
             var seguroSeleccionado = _context.Seguros.FirstOrDefault(s => s.CodigoProducto == datosCompra.CodigoSeguro);
@@ -69,7 +69,6 @@ namespace SegurosApp.LN
                 };
                 _context.Clientes.Add(cliente);
             }
-            _context.SaveChanges();
 
             //Verifica si el cliente ya tiene una poliza de este mismo tipo
             var polizaExistente = _context.Cliente_Seguros
@@ -80,17 +79,15 @@ namespace SegurosApp.LN
                 return new ResponseDto<object>(false, "El cliente ya tiene una póliza de este tipo.", null);
             }
 
-
             //Guardar Metodo de Pago
             var datosPago = new Cliente_ProductoFinanciero
             {
-                Cliente = cliente,
-                ProductoFinancieroId = _context.ProductoFinancieros.FirstOrDefault(pf => pf.CodigoProducto == datosCompra.CodigoProductoFinanciero)!.Id,
+                ClienteId = cliente.ID,
+                ProductoFinancieroId = productoFinancieroSeleccionado!.Id,
                 Numeroproducto = datosCompra.NumeroProductoFinanciero
             };
 
             _context.Cliente_ProductoFinancieros.Add(datosPago);
-            _context.SaveChanges();
 
             var ultimoSeguro = _context.Cliente_Seguros
                 .Where(cs => cs.SeguroId == seguroSeleccionado.Id && cs.PlanId == datosplanSeleccionado.Id)
@@ -110,6 +107,10 @@ namespace SegurosApp.LN
                 NumeroPoliza = numeroPoliza,
                 ProductoFinancieroId = productoFinancieroSeleccionado!.Id
             };
+
+            _context.Cliente_Seguros.Add(datosSeguro);
+            _context.SaveChanges();
+
             return new ResponseDto<object>(true, "Compra realizada exitosamente", new
             {
                 NumeroPoliza = numeroPoliza,
@@ -117,6 +118,7 @@ namespace SegurosApp.LN
                 FechaVigencia = DateTime.Now.AddYears(1)
             });
         }
+
 
         public int CalcularEdad(DateTime fechaNacimiento)
         {

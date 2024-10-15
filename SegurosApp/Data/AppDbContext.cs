@@ -24,6 +24,10 @@ namespace SegurosApp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Cliente_Seguro>()
+            .Property(cs => cs.ClienteID)
+            .HasColumnName("ClienteID");
+
             modelBuilder.Entity<Cliente>()
         .HasKey(c => c.ID);
 
