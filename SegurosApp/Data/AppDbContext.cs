@@ -10,7 +10,7 @@ namespace SegurosApp.Data
 {
     public class AppDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options): base(options)
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
 
@@ -24,9 +24,7 @@ namespace SegurosApp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Cliente_Seguro>()
-            .Property(cs => cs.ClienteID)
-            .HasColumnName("ClienteID");
+
 
             modelBuilder.Entity<Cliente>()
         .HasKey(c => c.ID);
@@ -57,10 +55,10 @@ namespace SegurosApp.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Cliente_ProductoFinanciero>()
-                .HasOne(cp => cp.Cliente)
-                .WithMany()
-                .HasForeignKey(cp => cp.ClienteId)
-                .OnDelete(DeleteBehavior.Restrict);
+            .HasOne(cpf => cpf.Cliente)
+            .WithMany(c => c.Cliente_ProductoFinancieros)
+            .HasForeignKey(cpf => cpf.ClienteId)
+            .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Cliente_ProductoFinanciero>()
                 .HasOne(cp => cp.ProductoFinanciero)
@@ -87,10 +85,10 @@ namespace SegurosApp.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Cliente_Seguro>()
-                .HasOne(cs => cs.Seguro)
-                .WithMany()
-                .HasForeignKey(cs => cs.SeguroId)
-                .OnDelete(DeleteBehavior.Restrict);
+            .HasOne(cs => cs.Cliente)
+            .WithMany(c => c.Cliente_Seguros)
+            .HasForeignKey(cs => cs.ClienteID)
+            .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Cliente_Seguro>()
                 .HasOne(cs => cs.Plan)
